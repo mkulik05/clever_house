@@ -23,7 +23,7 @@ let allowed_addresses = {
 
 let checkAccess = (ctx, method) => {
   if (Object.keys(allowed_addresses).includes(ctx.request.ip)) {
-    if (Objects.keys(allowed_addresses[ctx.request.ip]).includes(ctx.request.url) && allowed_addresses[ctx.request.ip][ctx.request.url].includes(method)) {
+    if (Object.keys(allowed_addresses[ctx.request.ip]).includes(ctx.request.url) && allowed_addresses[ctx.request.ip][ctx.request.url].includes(method)) {
       return 1
     } else {
       return 0
