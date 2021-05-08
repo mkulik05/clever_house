@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 const useStyles = makeStyles(() => ({
 	keyb: {
 		height: '100%',
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 		`,
 		gridTemplateRows: '1fr 1fr 1fr 1fr',
 		gridTemplateColumns: '1fr 1fr 1fr',
-		gridGap: '4vw',
+		gridGap: '2vw',
 	},
 	root: {
 	},
@@ -81,9 +81,8 @@ export default function Numpad(props) {
 	};
 	let dots = new Array(props.pwd.length);
 	dots.fill(0, 0, props.pwd.length);
-	let dots_size = props.pwd.length * 27;
 	return (
-		<Paper
+		<div
 			elevation={0}
 			className={classes.root}
 			style={{
@@ -91,7 +90,7 @@ export default function Numpad(props) {
 				height: props.height
 			}}
 		>
-			<Paper
+			<div
 				elevation={0}
 				className={classes.dotParent}
 			>
@@ -99,8 +98,8 @@ export default function Numpad(props) {
 					let color = i + 1 <= pwd.length ? 'black' : 'white';
 					return <div className={classes.dots} style={{ backgroundColor: `${color}` }} />;
 				})}
-			</Paper>
-			<Paper
+			</div>
+			<div
 				elevation={0}
 				className={classes.keyb}
 			>
@@ -109,7 +108,7 @@ export default function Numpad(props) {
 						{num}
 					</Button>
 				))}
-			</Paper>
-		</Paper>
+			</div>
+		</div>
 	);
 }

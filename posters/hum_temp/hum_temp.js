@@ -20,7 +20,7 @@ setInterval(() => {
 
       let temp = data.slice(data.indexOf("t") + 1)
       let hum = data.slice(1, data.indexOf("t"))
-      fetch("https://localhost:3001/data/temp", {
+      fetch("https://10.8.0.1:3001/data/temp", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -28,7 +28,7 @@ setInterval(() => {
         },
         referrerPolicy: 'no-referrer', body: JSON.stringify({ temp: parseFloat(temp) })
       })
-      fetch("https://localhost:3001/data/hum", {
+      fetch("https://10.8.0.1:3001/data/hum", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
