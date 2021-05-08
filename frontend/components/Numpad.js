@@ -6,38 +6,69 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
 	keyb: {
-		display: 'flex',
-		flexDirection: 'column'
+		height: '100%',
+		width: '100%',
+		display: 'grid',
+		gridTemplateAreas: ` 
+		"b1 b2 b3"
+		"b4 b5 b6"
+		"b7 b8 b9"
+		".  b0  ."
+		`,
+		gridTemplateRows: '1fr 1fr 1fr 1fr',
+		gridTemplateColumns: '1fr 1fr 1fr',
+		gridGap: '4vw',
 	},
 	root: {
-		display: 'flex',
-		justifyСontent: 'center',
-		flexDirection: 'column'
 	},
-	btn: {
-		margin: '5px',
-		flex: 2,
-		borderRadius: '50%'
+	b0: {
+		gridArea: 'b0'
 	},
-	line: {
-		flex: 2,
-		display: 'flex'
+	b1: {
+		gridArea: 'b1'
 	},
-	dot: {
-		width: '20px',
-		height: '20px',
-		border: '1px solid black',
-		margin: '2px',
-		borderRadius: '50%'
+	b2: {
+		gridArea: 'b2'
+	},
+	b3: {
+		gridArea: 'b3'
+	},
+	b4: {
+		gridArea: 'b4'
+	},
+	b5: {
+		gridArea: 'b5'
+	},
+	b6: {
+		gridArea: 'b6'
+	},
+	b7: {
+		gridArea: 'b7'
+	},
+	b8: {
+		gridArea: 'b8'
+	},
+	b9: {
+		gridArea: 'b9'
 	},
 	dotParent: {
 		display: 'flex',
-		flex:1
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	dots: {
+		height: '20px',
+		width: '20px',
+		border: '1px solid black',
+		borderRadius: '50%',
+		margin: '10px',
+		marginBottom: '40px',
+		marginTop: '25px'
 	}
 }));
 export default function Numpad(props) {
 	const classes = useStyles();
-	let [ pwd, setPwd ] = useState('');
+	let [pwd, setPwd] = useState('');
 	let clicked = (num) => {
 		let currPwd = pwd + num.toString();
 		setPwd(currPwd);
@@ -56,45 +87,27 @@ export default function Numpad(props) {
 			elevation={0}
 			className={classes.root}
 			style={{
-				width: props.width + dots_size,
-				height: props.height + 100
+				width: props.width,
+				height: props.height
 			}}
 		>
 			<Paper
 				elevation={0}
-				style={{
-					width: dots_size,
-					height: 100
-				}}
 				className={classes.dotParent}
 			>
 				{dots.map((_, i) => {
 					let color = i + 1 <= pwd.length ? 'black' : 'white';
-					return <div className={classes.dot} id={`dot${i}`} style={{ backgroundColor: `${color}` }} />;
+					return <div className={classes.dots} style={{ backgroundColor: `${color}` }} />;
 				})}
 			</Paper>
 			<Paper
 				elevation={0}
 				className={classes.keyb}
-				style={{
-					width: props.width,
-					height: props.height
-				}}
 			>
-				{[ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ], [ '', 0, '' ] ].map((num_arr) => (
-					<div className={classes.line}>
-						{num_arr.map((num) => {
-							if (num === '') {
-								return <div className={classes.btn} />;
-							} else {
-								return (
-									<Button variant="outlined" className={classes.btn} onClick={() => clicked(num)}>
-										{num}
-									</Button>
-								);
-							}
-						})}
-					</div>
+				{[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
+					<Button variant="outlined" className={classes.btn} className={classes['b' + num]} onClick={() => clicked(num)}>
+						{num}
+					</Button>
 				))}
 			</Paper>
 		</Paper>

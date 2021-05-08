@@ -92,8 +92,9 @@ export default function Main() {
 			<Paper className={classes.time_block}>
 				<Typography className={classes.time}>12:31</Typography>
 			</Paper>
-			<Paper className={classes.alarms}>D</Paper>
-			<Paper className={classes.weather}>E</Paper>
+			<Paper className={classes.alarms}></Paper>
+			<Paper className={classes.weather}></Paper>
 		</Paper>
+		
 	);
 }
