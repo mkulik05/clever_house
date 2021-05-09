@@ -9,7 +9,7 @@ def gen(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-@app.route('/')
+@app.route('/video')
 def index():
     return render_template('index.html')
 
@@ -18,4 +18,4 @@ def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port='5000', debug=True)
+    app.run(host='10.8.0.1',port='5000', debug=True)
