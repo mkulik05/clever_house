@@ -15,20 +15,20 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 def gen(camera):
     while True:
-    print(start_date.strftime('%m-%d %H:%M'))
-    videoWriter = cv2.VideoWriter('{}.avi'.format(start_date.strftime('%m-%d %H:%M:%S')), 
-        cv2.VideoWriter_fourcc('I','4','2','0'), fps, size)
-    
-    frame = camera.get_frame()
+        print(start_date.strftime('%m-%d %H:%M'))
+        videoWriter = cv2.VideoWriter('{}.avi'.format(start_date.strftime('%m-%d %H:%M:%S')), 
+            cv2.VideoWriter_fourcc('I','4','2','0'), fps, size)
+        
+        frame = camera.get_frame()
 
-    while True:
-        delta = divmod((datetime.datetime.now() - start_date).total_seconds(), 60)
-        if delta[0] > interval:
-            start_date = datetime.datetime.now()
-            break
-        videoWriter.write(frame)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        while True:
+            delta = divmod((datetime.datetime.now() - start_date).total_seconds(), 60)
+            if delta[0] > interval:
+                start_date = datetime.datetime.now()
+                break
+            videoWriter.write(frame)
+            yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 @app.route('/video')
 def index():
