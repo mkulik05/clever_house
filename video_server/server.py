@@ -4,7 +4,6 @@ from flask_cors import CORS
 import cv2
 import datetime
 
-start_date = datetime.datetime.now()
 interval = 10
 size = (640, 480)
 fps = 8
@@ -13,14 +12,13 @@ fps = 8
 app = Flask(__name__)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 def gen(camera):
+    start_date = datetime.datetime.now()
     while True:
         print(start_date.strftime('%m-%d %H:%M'))
         videoWriter = cv2.VideoWriter('{}.avi'.format(start_date.strftime('%m-%d %H:%M:%S')), 
             cv2.VideoWriter_fourcc('I','4','2','0'), fps, size)
-        
-        frame, jpeg = camera.get_frame()
-
         while True:
+            frame, jpeg = camera.get_frame()
             delta = divmod((datetime.datetime.now() - start_date).total_seconds(), 60)
             if delta[0] > interval:
                 start_date = datetime.datetime.now()
