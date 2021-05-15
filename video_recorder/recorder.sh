@@ -1,0 +1,1 @@
+ffmpeg -f video4linux2 -input_format h264 -video_size 1280x720 -framerate 10 -i /dev/video0 -f segment -segment_time 240 -reset_timestamps 1 -vcodec copy -an -strftime 1 %Y-%m-%d_%H-%M-%S.mkv
