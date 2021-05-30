@@ -33,13 +33,13 @@ const useStyles = makeStyles(() => ({
 export default function Main() {
 	const classes = useStyles();
 	return (
-		<Paper className={classes.root}>
-			<Temperature />
-			<Humidity/>
-			<Time/>
-			<Alarms/>
-			<Weather/>
-		</Paper>
-		//<Numpad pwd="1231231" width={300} height={400} callback={(res) => {console.log(res)}}/>
+		// <Paper className={classes.root}>
+		// 	<Temperature />
+		// 	<Humidity/>
+		// 	<Time/>
+		// 	<Alarms/>
+		// 	<Weather/>
+		// </Paper>
+		<Numpad pwd="1231231" width={300} height={450} callback={(res) => {console.log(res)}}/>
 	);
 }

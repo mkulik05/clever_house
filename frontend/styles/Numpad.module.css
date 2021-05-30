@@ -1,0 +1,36 @@
+.keyb {
+    flex-grow: 3;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+    "b1 b2 b3"
+    "b4 b5 b6"
+    "b7 b8 b9"
+    ".  b0  ."
+    ;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1vw;
+}
+.root {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.dotParent {
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 40px;
+    margin-top: 25px
+}
+.dots {
+    height: 20px;
+    width: 20px;
+    border: 1px solid black;
+    border-radius: 50%;
+    margin: 0 10px;
+}
