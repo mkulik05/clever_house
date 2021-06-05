@@ -1,1 +1,2 @@
-nohup sudo ffmpeg -f video4linux2 -input_format h264 -video_size 1280x720 -framerate 10 -i /dev/video0 -f segment -segment_time 240 -reset_timestamps 1 -vcodec copy -an -strftime 1 /mnt/usb/%Y-%m-%d_%H-%M-%S.mkv -f image2 -update 1 /mnt/usb/img.jpg -y &
+nohup sudo ffmpeg -f video4linux2 -input_format h264 -video_size 1280x720 -framerate 15
+ -i /dev/video0 -f segment -segment_time 240 -reset_timestamps 1 -vcodec copy -an -strftime 1 /mnt/usb/%Y-%m-%d_%H-%M-%S.mkv -f image2 -update 1 /mnt/tmpfs-folder/img.jpg -y &
