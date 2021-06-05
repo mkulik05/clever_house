@@ -19,29 +19,23 @@ const orderReccentFiles = (dir) => {
     .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
 };
 
-console.log(getMostRecentFile('.'));
 let bot_data = require('./bot.json');
 
 const bot = new Telegraf(bot_data.token);
 
-let prepareSending = async (ctx, id) => {
-    let last = getMostRecentFile("/mnt/tmpfs-folder").file
-    let i = parseInt(last.slice(last.length - 5, last.length - 4));
-    sendPhoto(ctx, id, i)
-}
-let sendPhoto = async (ctx, id, i, n = 0, l = 10) => {
+let sendPhoto = async (ctx, id, n = 0,) => {
     if (n > 15) {
         return;
     }
+    let last = getMostRecentFile("/mnt/tmpfs-folder").file
     bot.telegram.sendPhoto(id,
-        { source: fs.createReadStream(`/mnt/tmpfs-folder/img${i}.jpg`) }, { caption: "Door" }
+        { source: fs.createReadStream(`/mnt/tmpfs-folder/${last}`) }, { caption: last }
         , function (err, msg) {
             console.log(err);
             console.log(msg);
         });
-    i = i + 1 > l ? 0 : i + 1
     setTimeout(() => {
-        sendPhoto(ctx, id, i, n + 1)
+        sendPhoto(ctx, id, n + 1)
     }, 300)
 }
 
@@ -54,7 +48,7 @@ router.post(`/`, (ctx, next) => {
     ctx.response.body = "OK"
     for (let i = 0; i < ids.length; i++) {
         let id = ids[i];
-        prepareSending(ctx, id);
+        sendPhoto(ctx, id);
     }
 });
 app.use(bodyParser());
