@@ -23,19 +23,23 @@ let bot_data = require('./bot.json');
 
 const bot = new Telegraf(bot_data.token);
 
-let sendPhoto = async (ctx, id, n = 0,) => {
+let sendPhoto = async (ctx, id, n = 0, prev = "") => {
     if (n > 15) {
         return;
     }
     let last = getMostRecentFile("/mnt/tmpfs-folder").file
-    bot.telegram.sendPhoto(id,
-        { source: fs.createReadStream(`/mnt/tmpfs-folder/${last}`) }, { caption: last }
-        , function (err, msg) {
-            console.log(err);
-            console.log(msg);
-        });
+    if (prev !== last) {
+        bot.telegram.sendPhoto(id,
+            { source: fs.createReadStream(`/mnt/tmpfs-folder/${last}`) }, { caption: last }
+            , function (err, msg) {
+                console.log(err);
+                console.log(msg);
+            });
+    } else {
+        return sendPhoto(ctx, id, n, last)
+    }
     setTimeout(() => {
-        sendPhoto(ctx, id, n + 1)
+        sendPhoto(ctx, id, n + 1, last)
     }, 300)
 }
 
