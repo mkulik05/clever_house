@@ -56,14 +56,14 @@ router.post(`/`, (ctx, next) => {
     console.log("pooosst")
     
     let resp = ctx.request.body;
-    if (resp?.key === conf.doorKey) {
+    if (resp.key === conf.doorKey) {
         ctx.response.body = "OK"
         console.log("Verified")
-        if (resp?.msg === "started") {
+        if (resp.msg === "started") {
             last_door_opened = 0
         } else {
-            if (parseInt(resp?.time) - last_door_opened > max_diff) {
-                last_door_opened = parseInt(resp?.time)
+            if (parseInt(resp.time) - last_door_opened > max_diff) {
+                last_door_opened = parseInt(resp.time)
                 for (let i = 0; i < ids.length; i++) {
                     let id = ids[i];
                     sendPhoto(ctx, id);
