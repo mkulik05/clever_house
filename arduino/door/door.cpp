@@ -30,8 +30,6 @@ void setup()
     }
 
     norm = sum / 15;
-    // Serial.println(vals[7]);
-    // Serial.print("Normal  -  ");
     Serial.println(norm);
 }
 unsigned int prev = MAX_DISTANCE;
@@ -45,13 +43,6 @@ void loop()
     if (distance > MIN_DISTANCE)
     {
         int delta = prev - distance;
-        // Serial.print(delta);
-        // Serial.print("  ");
-        // Serial.print(distance);
-        // Serial.print("см");
-        // Serial.print(", PREV = ");
-        // Serial.print(prev);
-        // Serial.println("см");
         if (delta > MIN_DELTA || distance + MIN_DELTA < norm)
         {
             Serial.print(prev);

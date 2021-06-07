@@ -1,4 +1,5 @@
 node_modules
-bot.json
+conf.json
 package-lock.json
 bot-*
+certs
