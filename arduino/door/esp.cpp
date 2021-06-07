@@ -10,7 +10,7 @@ WiFiClient wifiClient;
 const char *ssid = "zoo";
 const char *password = "---";
 
-const char *host = "192.168.100.12";
+const char *host = "192.168.100.10";
 const char fingerprint[] PROGMEM = "6E 47 47 08 9B F7 B1 90 FA 02 7E F9 CB AF 2D B3 8E EE 4C 18";
 
 const String KEY = "DEhbcs34nbbiNOndsapHNI5dsNCODS";
