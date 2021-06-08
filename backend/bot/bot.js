@@ -1,7 +1,6 @@
 const { Telegraf } = require('telegraf')
 let fs = require('fs');
 const Koa = require('koa');
-const https = require('https');
 const app = new Koa();
 const cors = require('@koa/cors');
 const Router = require('koa-router');
@@ -80,7 +79,7 @@ app
     .use(router.routes())
     .use(router.allowedMethods());
 
-https.createServer({ key: fs.readFileSync('certs/key.key'), cert: fs.readFileSync('certs/cert.crt') }, app.callback()).listen(5000);
+app.listen(5000);
 
 
 
