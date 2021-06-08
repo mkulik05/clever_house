@@ -50,7 +50,7 @@ router.get('/', (ctx, next) => {
 
 
 let last_door_opened;
-let max_diff =  1 * 1000 // in milliseconds
+let max_diff =  4 * 1000 // in milliseconds
 router.post(`/`, (ctx, next) => {
     console.log("pooosst")
     
