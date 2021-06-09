@@ -17,6 +17,6 @@ const useStyles = makeStyles(() => ({
 export default function Alarms() {
     const classes = useStyles();
     return (
-        <Paper className={classes.weather}/>
+        <Paper onClick={() => alert(Clicked)} className={classes.weather}/>
     );
 }

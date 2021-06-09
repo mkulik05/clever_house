@@ -7,10 +7,12 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Humidity from '../components/Humidity'
 import Temperature from '../components/Temperature'
+import Menu from '../components/Menu'
 import Time from '../components/Time'
 import Weather from '../components/Weather'
 import Alarms from '../components/Alarms'
 
+import Router from 'next/router';
 const useStyles = makeStyles(() => ({
 	root: {
 		height: '100vh',
@@ -33,13 +35,14 @@ const useStyles = makeStyles(() => ({
 export default function Main() {
 	const classes = useStyles();
 	return (
-		// <Paper className={classes.root}>
-		// 	<Temperature />
-		// 	<Humidity/>
-		// 	<Time/>
-		// 	<Alarms/>
-		// 	<Weather/>
-		// </Paper>
-		<Numpad pwd="1231231" width={300} height={450} callback={(res) => {console.log(res)}}/>
+		<Paper className={classes.root}>
+			<Temperature/>
+			<Humidity/>
+			<Time/>
+			<button type="button" onClick={() => Router.push('/login')} />
+			<Alarms/>
+			<Weather/>
+		</Paper>
+		// <Numpad pwd="1231231" width={300} height={450} callback={(res) => {console.log(res)}}/>
 	);
 }

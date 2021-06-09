@@ -49,8 +49,8 @@ router.get('/', (ctx, next) => {
 });
 
 
-let last_door_opened;
-let max_diff =  4 * 1000 // in milliseconds
+let last_door_opened = 0;
+let min_diff =  4 * 1000 // in milliseconds
 router.post(`/`, (ctx, next) => {
     console.log("pooosst")
     
@@ -58,10 +58,10 @@ router.post(`/`, (ctx, next) => {
     if (resp.key === conf.doorKey) {
         ctx.response.body = "OK"
         console.log("Verified")
-        if (resp.msg === "started") {
-            last_door_opened = 0
+        if (resp.msg === "init") {
+            last_door_opened = parseInt(resp.time)
         } else {
-            if (parseInt(resp.time) - last_door_opened > max_diff) {
+            if (parseInt(resp.time) - last_door_opened > min_diff) {
                 last_door_opened = parseInt(resp.time)
                 for (let i = 0; i < ids.length; i++) {
                     let id = ids[i];

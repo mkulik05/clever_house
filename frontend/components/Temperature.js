@@ -3,7 +3,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 
-
 const useStyles = makeStyles(() => ({
     temp_block: {
         gridArea: 'temp',
@@ -16,7 +15,7 @@ const useStyles = makeStyles(() => ({
     },
     temp: {
         textAlign: 'center',
-        fontSize: '100pt',
+        fontSize: '12vw',
         color: 'white'
     },
 }));

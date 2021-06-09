@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
 	},
 	hum: {
 		textAlign: 'center',
-		fontSize: '120pt',
+        fontSize: '12vw',
 		color: 'white'
 	},
 }));

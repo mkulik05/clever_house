@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,18 +16,27 @@ const useStyles = makeStyles(() => ({
     },
     time: {
         textAlign: 'center',
-        fontSize: '120pt',
+        fontSize: '12vw',
         color: 'white'
     },
 }));
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 export default function Time() {
     const classes = useStyles();
+    let [time, setTime] = useState("00:00")
+    useEffect(()=>{
+        setInterval(async() =>{
+            let t = new Date()
+            let h = t.getHours();
+            let m = t.getMinutes();
+            setTime((h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m))
+        }, 60 * 1000)
+    }, [])
     return (
         <Paper className={classes.time_block}>
-            <Typography className={classes.time}>12:31</Typography>
+            <Typography className={classes.time}>{time}</Typography>
         </Paper>
     );
 }
