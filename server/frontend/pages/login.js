@@ -3,7 +3,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Numpad from '../components/Numpad';
-import axios from 'axios'
 
 
 const useStyles = makeStyles(() => ({
@@ -18,24 +17,18 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
 export default function Login() {
     let verify = async (pwd) => {
-        // let res = await axios.post('https://192.168.100.12:3001/login', { pwd: pwd },  {credentials: 'same-origin'})
-        let res =  await fetch('/api/login', {
-            method: 'POST', 
+        let res = await fetch('/api/login', {
+            method: 'POST',
             cache: 'no-cache',
-            "secure": false, 
             headers: {
-              'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer', 
-            body: JSON.stringify({pwd: pwd}) 
-          });
-          res = await res.json();
-          console.log(res)
+            body: JSON.stringify({ pwd: pwd })
+        });
+        res = await res.json();
+        console.log(res)
         res = res.status
         if (res === 'OK') {
             alert("logined successfully")
@@ -46,7 +39,7 @@ export default function Login() {
             }, 700)
         }
     }
-    
+
     let [pwdL, setPwdL] = useState(0)
     let [deny, setDeny] = useState(0)
     const classes = useStyles();
@@ -62,10 +55,3 @@ export default function Login() {
         </Paper>
     );
 }
-
-
-/* 
-ctx.set('Access-Control-Allow-Origin', '*');
-ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
-*/

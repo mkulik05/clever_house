@@ -1,13 +1,9 @@
 import React from 'react';
-import Chart from '../components/Chart';
-import Numpad from '../components/Numpad';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import Humidity from '../components/Humidity'
 import Temperature from '../components/Temperature'
-import Menu from '../components/Menu'
 import Time from '../components/Time'
 import Weather from '../components/Weather'
 import Alarms from '../components/Alarms'
@@ -39,10 +35,9 @@ export default function Main() {
 			<Temperature/>
 			<Humidity/>
 			<Time/>
-			<button type="button" onClick={() => Router.push('/login')} />
 			<Alarms/>
 			<Weather/>
+			<VideoLibraryIcon onClick={() => Router.push('/login')} style={{position: 'absolute'}} color='primary'/>
 		</Paper>
-		// <Numpad pwd="1231231" width={300} height={450} callback={(res) => {console.log(res)}}/>
 	);
 }
