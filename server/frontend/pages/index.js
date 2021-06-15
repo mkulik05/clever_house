@@ -7,8 +7,8 @@ import Temperature from '../components/Temperature'
 import Time from '../components/Time'
 import Weather from '../components/Weather'
 import Alarms from '../components/Alarms'
-
 import Router from 'next/router';
+
 const useStyles = makeStyles(() => ({
 	root: {
 		height: '100vh',
@@ -32,12 +32,12 @@ export default function Main() {
 	const classes = useStyles();
 	return (
 		<Paper className={classes.root}>
+			<VideoLibraryIcon onClick={() => Router.push('/login')} style={{ position: 'absolute', fontSize: '30px' }} color='primary'/>
 			<Temperature/>
 			<Humidity/>
 			<Time/>
 			<Alarms/>
 			<Weather/>
-			<VideoLibraryIcon onClick={() => Router.push('/login')} style={{position: 'absolute'}} color='primary'/>
 		</Paper>
 	);
 }

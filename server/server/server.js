@@ -6,8 +6,12 @@ const cors = require('@koa/cors');
 const Router = require('koa-router');
 const bodyParser = require('koa-body');
 const uniqid = require('uniqid');
+const ffmpeg = require('fluent-ffmpeg');
 const router = new Router();
 const pwd = require('./pwd.json').pwd
+const httpServer = require("http").createServer(app.callback());
+const io = require("socket.io")(httpServer);
+console.log("import finished")
 let data = {}
 
 let topics = ["hum", "temp"]
@@ -26,6 +30,7 @@ let allowed_addresses = {
 
 let login_attempts = {}
 let logined = {}
+let ban_time = 20 // seconds
 
 let max_login_attemts = 3;
 let checkAccess = (ctx, method) => {
@@ -40,10 +45,14 @@ let checkAccess = (ctx, method) => {
 
 let get_videos_list = () => {
   let files = []
-  fs.readdirSync("/home/mkulik05/videos").forEach(file => {
+  let files2 = []
+  fs.readdirSync("/home/mkulik05/videos_avi").forEach(file => {
     files.push(file)
   });
-  return files
+  fs.readdirSync("/home/mkulik05/videos").forEach(file => {
+    files2.push(file)
+  });
+  return [files, files2]
 }
 
 let add_to_config = (key) => {
@@ -52,6 +61,23 @@ let add_to_config = (key) => {
   conf.allowed.push(key)
   fs.writeFileSync('/home/mkulik05/config.json', JSON.stringify(conf));
 }
+
+io.on("connection", socket => {
+  socket.on("convert", (name) => {
+  console.log("cscscs")
+    ffmpeg("/home/mkulik05/videos_avi/" + name + ".mkv").videoCodec('copy').save("/home/mkulik05/videos/" + name + '.mp4').on('progress', function(progress) {
+      console.log('Processing: ' + progress.percent + '% done');
+      socket.emit("convert-progress", progress.percent);
+    }).on('end', () => {
+      socket.emit("convert-finished", name);
+    }).on('error', function(err, stdout, stderr) {
+      socket.emit("convert-error", [stdout, stderr]);
+      console.log("ffmpeg stdout:\n" + stdout);
+      console.log("ffmpeg stderr:\n" + stderr);
+    })
+
+  });
+});
 
 let remove_from_config = (key) => {
   let conf = fs.readFileSync('/home/mkulik05/config.json');
@@ -62,11 +88,7 @@ let remove_from_config = (key) => {
   }
   fs.writeFileSync('/home/mkulik05/config.json', JSON.stringify(conf));
 }
-// router.get('/', async (ctx, next) => {
-//   const stats = await sendFile(ctx, '../../frontend/out/index.html')
-//   if (!ctx.status) ctx.throw(404)
-//   console.log(stats)
-// })
+
 
 router.get('/data', (ctx, next) => {
   ctx.body = checkAccess(ctx, "GET") ? data : "Permission denied"
@@ -109,20 +131,25 @@ router.post('/api/login', (ctx, next) => {
         next();
       } else {
         console.log("no")
+        
         if (Object.keys(login_attempts).includes(ctx.request.ip)) {
           login_attempts[ctx.request.ip] += 1
-          if (login_attempts[ctx.request.ip] === max_login_attemts) {
+          if (login_attempts[ctx.request.ip] === max_login_attemts - 1) {
+            ctx.response.status = 423
+            ctx.response.body = { status: `locked:${ban_time}`  }
             console.log("locked")
             setTimeout(() => {
               login_attempts[ctx.request.ip] = 0
               console.log("unlocked", ctx.request.ip)
-            }, 10000)
+            }, ban_time * 1000)
+          } else {
+            ctx.response.status = 403
           }
         } else {
+          ctx.response.status = 403
           login_attempts[ctx.request.ip] = 1
+          ctx.response.body = { status: "REJECTED" }
         }
-        ctx.response.body = { status: "REJECTED" }
-        ctx.response.status = 403
         next();
       }
     } else {
@@ -155,5 +182,5 @@ app.use(cors({ origin: '*', }))
 app
   .use(router.routes())
   .use(router.allowedMethods());
-process.env.NODE_ENV !== 'production' ? app.listen(3001) : https.createServer({ key: fs.readFileSync('certs/key.key'), cert: fs.readFileSync('certs/cert.crt') }, app.callback()).listen(3001);
+process.env.NODE_ENV !== 'production' ? httpServer.listen(3001) : https.createServer({ key: fs.readFileSync('certs/key.key'), cert: fs.readFileSync('certs/cert.crt') }, app.callback()).listen(3001);
   // , "10.8.0.1");
