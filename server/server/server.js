@@ -11,6 +11,8 @@ const router = new Router();
 const pwd = require('./pwd.json').pwd
 const httpServer = require("http").createServer(app.callback());
 const io = require("socket.io")(httpServer);
+const dotenv = require('dotenv');
+dotenv.config({ path: '../../path.env'});
 console.log("import finished")
 let data = {}
 
@@ -23,16 +25,20 @@ let allowed_addresses = {
   },
   "10.8.0.2": {
     "/data/hum": ["GET"],
-    "/dld the Next.js project with this command npm run build and all the built assets will be put under the out folder. When you run this command the followata/temp": ["GET"],
+    "/data/temp": ["GET"],
     '/data': ["GET"]
   }
 }
 
-let login_attempts = {}
 let logined = {}
-let ban_time = 20 // seconds
+let default_ban_time = 20  // seconds
+
+let ban_time = default_ban_time
 
 let max_login_attemts = 3;
+
+let login_attempts = 0;
+
 let checkAccess = (ctx, method) => {
   return 1
   if (Object.keys(allowed_addresses).includes(ctx.request.ip)) {
@@ -46,31 +52,31 @@ let checkAccess = (ctx, method) => {
 let get_videos_list = () => {
   let files = []
   let files2 = []
-  fs.readdirSync("/home/mkulik05/videos_avi").forEach(file => {
+  fs.readdirSync(process.env.VIDEO_FOLDER + "/videos_avi").forEach(file => {
     files.push(file)
   });
-  fs.readdirSync("/home/mkulik05/videos").forEach(file => {
+  fs.readdirSync(process.env.VIDEO_FOLDER + "/videos").forEach(file => {
     files2.push(file)
   });
   return [files, files2]
 }
 
 let add_to_config = (key) => {
-  let conf = fs.readFileSync('/home/mkulik05/config.json');
+  let conf = fs.readFileSync(process.env.VIDEO_ACCESS_CONF);
   conf = JSON.parse(conf)
   conf.allowed.push(key)
-  fs.writeFileSync('/home/mkulik05/config.json', JSON.stringify(conf));
+  fs.writeFileSync(process.env.VIDEO_ACCESS_CONF, JSON.stringify(conf));
 }
 
 io.on("connection", socket => {
   socket.on("convert", (name) => {
-  console.log("cscscs")
-    ffmpeg("/home/mkulik05/videos_avi/" + name + ".mkv").videoCodec('copy').save("/home/mkulik05/videos/" + name + '.mp4').on('progress', function(progress) {
+    console.log("cscscs")
+    ffmpeg(process.env.VIDEO_FOLDER + "/videos_avi" + name + ".avi").videoCodec('copy').save(process.env.VIDEO_FOLDER + "/videos" + name + '.mp4').on('progress', function (progress) {
       console.log('Processing: ' + progress.percent + '% done');
       socket.emit("convert-progress", progress.percent);
     }).on('end', () => {
       socket.emit("convert-finished", name);
-    }).on('error', function(err, stdout, stderr) {
+    }).on('error', function (err, stdout, stderr) {
       socket.emit("convert-error", [stdout, stderr]);
       console.log("ffmpeg stdout:\n" + stdout);
       console.log("ffmpeg stderr:\n" + stderr);
@@ -80,13 +86,13 @@ io.on("connection", socket => {
 });
 
 let remove_from_config = (key) => {
-  let conf = fs.readFileSync('/home/mkulik05/config.json');
+  let conf = fs.readFileSync(process.env.VIDEO_ACCESS_CONF);
   conf = JSON.parse(conf)
   let i = conf.allowed.indexOf(key);
   if (i > -1) {
     conf.allowed.splice(i, 1);
   }
-  fs.writeFileSync('/home/mkulik05/config.json', JSON.stringify(conf));
+  fs.writeFileSync(process.env.VIDEO_ACCESS_CONF, JSON.stringify(conf));
 }
 
 
@@ -111,51 +117,45 @@ router.post('/api/logout', (ctx, next) => {
 })
 
 router.post('/api/login', (ctx, next) => {
+  console.log(login_attempts)
+  ctx.cookies.set("test", -1)
   if (checkAccess(ctx, "POST")) {
-    if ((login_attempts[ctx.request.ip] || 0) < max_login_attemts) {
+    if (login_attempts < 20) {
+      console.log(2)
       if (ctx.request.body.pwd === pwd) {
         let id = uniqid() + uniqid()
         logined[id] = ctx.request.ip
-        console.log(ctx.cookies.get("sessionid"))
-        console.log("OK")
         remove_from_config(ctx.cookies.get("sessionid"))
+        ctx.cookies.set("left_logins", null)
         add_to_config(id)
         setTimeout(() => {
           remove_from_config(id)
         }, 20 * 60 * 1000)
         ctx.cookies.set("sessionid", id, { MaxAge: 20 * 60 })
-        //ctx.response.cookie.set("login_attempts", login_attempts)
-        login_attempts[ctx.request.ip] = 0
+        login_attempts = 0
         ctx.response.body = { status: "OK" }
         ctx.response.status = 200
-        next();
+        ban_time = default_ban_time
       } else {
         console.log("no")
-        
-        if (Object.keys(login_attempts).includes(ctx.request.ip)) {
-          login_attempts[ctx.request.ip] += 1
-          if (login_attempts[ctx.request.ip] === max_login_attemts - 1) {
-            ctx.response.status = 423
-            ctx.response.body = { status: `locked:${ban_time}`  }
-            console.log("locked")
-            setTimeout(() => {
-              login_attempts[ctx.request.ip] = 0
-              console.log("unlocked", ctx.request.ip)
-            }, ban_time * 1000)
-          } else {
-            ctx.response.status = 403
-          }
+        login_attempts += 1
+        if (login_attempts >= 20 ) {
+          ctx.response.status = 423
+          ctx.response.body = { status: `locked:${ban_time}` }
+          console.log("locked")
+          ban_time = Math.floor(ban_time * 2.5)
+          setTimeout(() => {
+            login_attempts = 0
+            console.log("unlocked", ctx.request.ip)
+          }, ban_time * 1000)
         } else {
           ctx.response.status = 403
-          login_attempts[ctx.request.ip] = 1
-          ctx.response.body = { status: "REJECTED" }
         }
-        next();
       }
     } else {
       console.log("deny")
       ctx.response.body = { status: "REJECTED, try later" }
-      ctx.response.status = 403
+      ctx.response.status = 423
     }
 
   } else {
@@ -183,4 +183,3 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 process.env.NODE_ENV !== 'production' ? httpServer.listen(3001) : https.createServer({ key: fs.readFileSync('certs/key.key'), cert: fs.readFileSync('certs/cert.crt') }, app.callback()).listen(3001);
-  // , "10.8.0.1");
