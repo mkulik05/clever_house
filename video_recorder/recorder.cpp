@@ -3,10 +3,16 @@
 #include <string>
 #include <ctime>
 #include <chrono>
+#include <unistd.h>
 using namespace std;
 using namespace cv;
 
 // g++ recorder.cpp  -o rec `pkg-config --cflags --libs opencv`
+
+string vid_path = "/home/pi/";
+string photos_path = "/mnt/tmpfs-folder/";
+int photos = 100;
+
 
 int rec(VideoWriter video, VideoCapture cap, auto before, int seconds)
 {
@@ -14,14 +20,12 @@ int rec(VideoWriter video, VideoCapture cap, auto before, int seconds)
   cout << "Recording" << endl;
   using clock = std::chrono::system_clock;
   using sec = std::chrono::duration<double>;
-  int c = 0;
-  int i = 0;
-  int l = 10;
+  int n = 0;
+
   while (true)
   {
 
     Mat frame;
-
     cap >> frame;
 
     if (frame.empty())
@@ -29,24 +33,20 @@ int rec(VideoWriter video, VideoCapture cap, auto before, int seconds)
 
     video.write(frame);
     sec duration = clock::now() - before;
-    if (c % 3 == 0)
-    {
-      imwrite("/mnt/tmpfs-folder/img" + to_string(i) + ".jpg", frame);
-      if (i > l)
-      {
-        i = 0;
-      }
-      else
-      {
-        i += 1;
-      }
+
+    if (n % 3 == 0) {
+     imwrite(photos_path + "img" + to_string(n) + ".jpg", frame);
     }
 
+    if (n > photos) {
+
+        unlink((photos_path + "img" + to_string(n - photos) + ".jpg").c_str());
+    }
     if (duration.count() > seconds)
     {
       break;
     }
-    c += 1;
+    n += 1;
   }
   return 0;
 }
@@ -77,11 +77,10 @@ int main()
     string seconds = to_string(t.tm_sec);
     string res = (t.tm_mday < 10 ? "0" + day : day) + "-" + (t.tm_mon < 10 ? "0" + month : month) + "-" + to_string(t.tm_year + 1900) +
                  " " + (t.tm_hour < 10 ? "0" + hours : hours) + ":" + (t.tm_min < 10 ? "0" + minutes : minutes) + ":" + (t.tm_sec < 10 ? "0" + seconds : seconds);
-    VideoWriter video("/mnt/usb/" + res + ".avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 7, Size(frame_width, frame_height));
+    VideoWriter video(vid_path + res + ".avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 7, Size(frame_width, frame_height));
     const auto before = clock::now();
     rec(video, cap, before, 5 * 60);
     video.release();
-    cout << ".";
   }
 
   return 0;

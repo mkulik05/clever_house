@@ -1,22 +1,30 @@
 const { Telegraf } = require('telegraf')
-let fs = require('fs');
+const fs = require('fs');
 const Koa = require('koa');
 const app = new Koa();
 const cors = require('@koa/cors');
 const Router = require('koa-router');
 const bodyParser = require('koa-body');
 const router = new Router();
-const path = require("path");
-const getMostRecentFile = (dir) => {
-  const files = orderReccentFiles(dir);
-  return files.length ? files[0] : undefined;
-};
 
-const orderReccentFiles = (dir) => {
-  return fs.readdirSync(dir)
-    .filter((file) => fs.lstatSync(path.join(dir, file)).isFile())
-    .map((file) => ({ file, mtime: fs.lstatSync(path.join(dir, file)).mtime }))
-    .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+const getMostRecentFile = (dir) => {
+    let files = fs.readdirSync(dir);
+    files.sort((a, b) => {
+        a = a.slice(0, a.indexOf("."))
+        b = b.slice(0, b.indexOf("."))
+        try {
+            a = parseInt(a)
+            b = parseInt(b)
+        } catch (err) {}
+        if (a > b) {
+          return 1;
+        }
+        if (a < b) {
+          return -1;
+        }
+        return 0;
+      });
+    return files[files.length - 1]
 };
 
 let conf = require('./conf.json');
@@ -27,7 +35,7 @@ let sendPhoto = async (ctx, id, n = 0, prev = "") => {
     if (n > 15) {
         return;
     }
-    let last = getMostRecentFile("/mnt/tmpfs-folder").file
+    let last = getMostRecentFile("/mnt/tmpfs-folder")
     console.log(prev, last)
     if (prev !== last) {
         bot.telegram.sendPhoto(id,
@@ -51,6 +59,7 @@ router.get('/', (ctx, next) => {
 
 let last_door_opened = 0;
 let min_diff =  4 * 1000 // in milliseconds
+
 router.post(`/`, (ctx, next) => {
     console.log("pooosst")
     
